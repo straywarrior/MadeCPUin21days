@@ -54,7 +54,8 @@ entity CPU_TOP is
            
            -- For Debug
            LED : out  STD_LOGIC_VECTOR (15 downto 0);
-           SW : in STD_LOGIC_VECTOR (15 downto 0)
+           SW : in STD_LOGIC_VECTOR (15 downto 0);
+           DLED_RIGHT : out STD_LOGIC_VECTOR (6 downto 0)
            );
 end CPU_TOP;
 
@@ -422,7 +423,9 @@ architecture Behavioral of CPU_TOP is
                Serial_rdn : out STD_LOGIC;
                Serial_tbre : in STD_LOGIC;
                Serial_tsre : in STD_LOGIC;
-               Serial_wrn : out STD_LOGIC
+               Serial_wrn : out STD_LOGIC;
+               
+               DLED_Right : out STD_LOGIC_VECTOR (6 downto 0)
                );
     end COMPONENT;
 
@@ -487,14 +490,18 @@ begin
             & Decoder_PC_Sel & RegAVal_MUX_SEL & RegBVal_MUX_SEL & "0000" when (SW = "0000000000010110") else
         RegAVal_MUX_OUT when (SW = "0000000000011110") else
         RegBVal_MUX_OUT when (SW = "0000000000011100") else
+        
         ALU_RESULT when (SW = "0000000000100000") else
         OpA_MUX_SEL & OpB_MUX_SEL & MemDIn_MUX_SEL & ID_EXE_RegOpA & ID_EXE_RegOpB & "00" when (SW = "0000000000100001") else
         ID_EXE_OpCode & ID_EXE_MemRead & ID_EXE_MemWrite & ID_EXE_RegWrite & ID_EXE_RegDest & "00000" when (SW = "0000000000100011") else
+        ID_EXE_MemDIn when (SW = "0000000000100111") else
+        ID_EXE_RegMemDIn & "000000000000" when (SW = "0000000000100110") else
         
         EXE_MEM_RegWrite & EXE_MEM_RegDest & EXE_MEM_MemRead & EXE_MEM_MemWrite 
-            & SERIAL_DATA_READY & SERIAL_TBRE & SERIAL_TSRE & "000000" when (SW = "0000000001000001") else
+            & SERIAL_DATA_READY & SERIAL_TBRE & SERIAL_TSRE & DATA_MEM_SERIAL_FINISH & "00000" when (SW = "0000000001000001") else
         DATA_MEM_OUT when (SW = "0000000001000011") else
         DATA_MEM_MUX_OUT when (SW = "0000000001000010") else
+        EXE_MEM_MemDIn when (SW = "0000000001000111") else
         
         MEM_WB_RegWriteVal when (SW = "0000000010000000") else
         MEM_WB_RegDest & MEM_WB_RegWrite & "00000000000" when (SW = "0000000010000001") else
@@ -519,7 +526,7 @@ begin
         MemWrite_EXE => ID_EXE_MemWrite,
         MemRead_MEM => EXE_MEM_MemRead,
         MemWrite_MEM => EXE_MEM_MemWrite,
-        MemAddr => ALU_RESULT,
+        MemAddr => EXE_MEM_ALUOUT,
         pc_sel=> Decoder_PC_Sel,
         CReg => Decoder_CReg,
         CRegA => Decoder_CRegA,
@@ -805,7 +812,9 @@ begin
         Serial_rdn => SERIAL_RDN,
         Serial_tbre => SERIAL_TBRE,
         Serial_tsre => SERIAL_TSRE,
-        Serial_wrn => SERIAL_WRN
+        Serial_wrn => SERIAL_WRN,
+        
+        DLED_Right => DLED_RIGHT
         );
     
     MEM_MUX : TwoInMuxer_16bit PORT MAP (
