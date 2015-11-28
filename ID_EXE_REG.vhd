@@ -78,7 +78,6 @@ process (clear, reset, clk)
             RegOpB_out <= (others => '1');
         elsif (clk'event and clk = '1') then
             if (clear = '0' and stall = '0') then
-                -- Insert a bubble here
                 RegWE_out <= RegWE_in;
                 RegDest_out <= RegDest_in;
                 MemRd_out <= MemRd_in;
@@ -103,6 +102,7 @@ process (clear, reset, clk)
                 RegOpA_out <= (others => '1');
                 RegOpB_out <= (others => '1');
             else
+                -- Insert a bubble here
                 null;
             end if;
         end if;

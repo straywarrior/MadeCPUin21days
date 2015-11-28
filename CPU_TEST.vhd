@@ -59,7 +59,8 @@ ARCHITECTURE behavior OF CPU_TEST IS
          SERIAL_TSRE : IN  std_logic;
          SERIAL_WRN : OUT  std_logic;
          SW : IN std_logic_vector (15 downto 0);
-         LED : OUT  std_logic_vector(15 downto 0)
+         LED : OUT  std_logic_vector(15 downto 0);
+         DLED_RIGHT : out STD_LOGIC_VECTOR (6 downto 0)
         );
     END COMPONENT;
     
@@ -68,8 +69,8 @@ ARCHITECTURE behavior OF CPU_TEST IS
    signal clock : std_logic := '0';
    signal reset : std_logic := '0';
    signal SERIAL_DATA_READY : std_logic := '0';
-   signal SERIAL_TBRE : std_logic := '0';
-   signal SERIAL_TSRE : std_logic := '0';
+   signal SERIAL_TBRE : std_logic := '1';
+   signal SERIAL_TSRE : std_logic := '1';
 
 	--BiDirs
    signal RAM1DATA : std_logic_vector(15 downto 0);
@@ -88,6 +89,7 @@ ARCHITECTURE behavior OF CPU_TEST IS
    signal SERIAL_WRN : std_logic;
    signal LED : std_logic_vector(15 downto 0);
    signal SW : std_logic_vector (15 downto 0);
+   signal DLED_RIGHT : std_logic_vector (6 downto 0);
 
    -- Clock period definitions
    constant clock_period : time := 20 ns;
@@ -116,7 +118,8 @@ BEGIN
           SERIAL_TSRE => SERIAL_TSRE,
           SERIAL_WRN => SERIAL_WRN,
           SW => SW,
-          LED => LED
+          LED => LED,
+          DLED_RIGHT => DLED_RIGHT
         );
 
    -- Clock process definitions
@@ -134,7 +137,7 @@ BEGIN
    begin		
         -- hold reset state.
         reset <= '0';
-        sw <= "0000000000010001";
+        sw <= "0000000001000111";
         wait for 10 ns;
         reset <= '1';
 
@@ -146,23 +149,30 @@ BEGIN
         wait for clock_4t_period;
         RAM2DATA <= x"0800";
         wait for clock_4t_period;
-        RAM2DATA <= "1110100011001100";
+        RAM2DATA <= x"6D40";
         wait for clock_4t_period;
-        RAM2DATA <= "0010000011111000";
+        RAM2DATA <= x"35A0";
         wait for clock_4t_period;
-        RAM2DATA <= x"9E00";
+        RAM2DATA <= x"6880";
         wait for clock_4t_period;
-        RAM2DATA <= x"4803";
+        RAM2DATA <= x"3000";
         wait for clock_4t_period;
-        RAM2DATA <= x"9E01";
+        RAM2DATA <= x"DD00";
         wait for clock_4t_period;
-        RAM2DATA <= x"0800";
-        wait for clock_4t_period;
-        RAM2DATA <= x"4810";
-        wait for clock_4t_period;
-        RAM2DATA <= x"0800";
+        RAM2DATA <= x"68EF";
         wait for clock_4t_period;
         
+        RAM2DATA <= (others => 'Z');
+        wait for clock_4t_period;
+        
+        RAM2DATA <= x"3000";
+        wait for clock_4t_period;
+        RAM2DATA <= x"DD01";
+        wait for clock_4t_period;
+        RAM2DATA <= x"0800";
+        wait for clock_4t_period;
+        RAM2DATA <= x"0800";
+        wait for clock_4t_period;
         -- NOP
         RAM2DATA <= "0000100000000000";
         wait for clock_4t_period;

@@ -50,13 +50,14 @@ entity DataMemoryControl is
            Serial_rdn : out STD_LOGIC;
            Serial_tbre : in STD_LOGIC;
            Serial_tsre : in STD_LOGIC;
-           Serial_wrn : out STD_LOGIC
-            
+           Serial_wrn : out STD_LOGIC;
+           
+           DLED_Right : out STD_LOGIC_VECTOR (6 downto 0)
            );
 end DataMemoryControl;
 
 architecture Behavioral of DataMemoryControl is
-    type state_type is (s0, s1, s2, s3);
+    type state_type is (s0, s1, s2, s3, sr0, sr1); -- sr1 and sr2 is state for serial write
     signal state : state_type;
 
 begin
@@ -71,165 +72,136 @@ begin
     begin
         if (reset = '0') then
             state <= s0;
+        elsif (clk'event and clk = '1') then
+            case state is
+            when s0 => state <= s1;
+            when s1 => state <= s2;
+            when s2 => state <= s3;
+            when s3 => 
+                if (Serial_tsre = '1' and Serial_tbre = '1') then
+                    state <= s0;
+                else
+                    state <= sr0;
+                end if;
+            when sr0 => state <= sr1;
+            when sr1 => state <= s2;
+            when others => state <= s0;
+            end case;
+        end if;
+    end process;
+    
+    process (clk, reset)
+    begin
+        if (reset = '0') then
             RAM1EN <= '1';
             RAM1OE <= '1';
             RAM1RW <= '1';
             Serial_rdn <= '1';
             Serial_wrn <= '1';
             SerialFinish <= '1';
-        elsif (clk'event and clk = '1') then
-            if (state = s0) then
-                state <= s1;
+        elsif (clk'event and clk = '1' and MemAddr >= x"8000" and MemAddr <= x"FFFF") then
+            case state is
+            when s0 =>
                 -- prepare for the control, data and address
                 RAM1EN <= '1';
                 RAM1OE <= '1';
                 RAM1RW <= '1';
-                SerialFinish <= '0';
+                SerialFinish <= '1';
                 Serial_rdn <= '1';
                 Serial_wrn <= '1';
-            elsif (state = s1) then
-                state <= s2;
-                -- Read Memory (LW rx ry imm)
+            when s1 =>
                 if (MemRead = '1') then
-                    -- Serial Port
-                    if (MemAddr = x"BF00") then
-                        RAM1EN <= '1';
-                        RAM1OE <= '1';
-                        RAM1RW <= '1';
+                    case MemAddr is
+                    when x"BF00" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
                         SerialFinish <= '0';
                         Serial_rdn <= '0';
                         Serial_wrn <= '1';
-                    elsif (MemAddr = x"BF01") then
-                        RAM1EN <= '1';
-                        RAM1OE <= '1';
-                        RAM1RW <= '1';
+                    when x"BF01" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
                         SerialFinish <= '0';
                         Serial_wrn <= '1';
                         Serial_rdn <= '1';
-                    -- RAM1
-                    elsif (MemAddr >= x"8000" and MemAddr <= x"FFFF") then
+                    when others =>
                         RAM1EN <= '0';
                         RAM1OE <= '0';
                         RAM1RW <= '1';
-                        SerialFinish <= '1';
+                        SerialFinish <= '1'; Serial_rdn <= '1'; Serial_wrn <= '1';
+                    end case;
+                end if;
+                if (MemWrite = '1') then
+                    case MemAddr is
+                    when x"BF00" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                        SerialFinish <= '0';
                         Serial_rdn <= '1';
-                        Serial_wrn <= '1';
-                    else
-                        RAM1EN <= '1';
-                        RAM1OE <= '1';
-                        RAM1RW <= '1';
-                        SerialFinish <= '1';
-                        Serial_rdn <= '1';
-                        Serial_wrn <= '1';
-                    end if;
-                -- Write Memory (SW rx ry imm)
-                elsif (MemWrite = '1') then
-                    -- Serial Port
-                    if (MemAddr = x"BF00") then
-                        if (Serial_tsre = '1' and Serial_tbre = '1') then
-                            Serial_wrn <= '0';
-                            SerialFinish <= '0';
-                        else
-                            Serial_wrn <= '1';
-                            SerialFinish <= '0';
-                        end if;
-                        Serial_rdn <= '1';
-                        RAM1EN <= '1';
-                        RAM1OE <= '1';
-                        RAM1RW <= '1';
-                    elsif (MemAddr = x"BF01") then
-                        RAM1EN <= '1';
-                        RAM1OE <= '1';
-                        RAM1RW <= '1';
-                        SerialFinish <= '1';
-                        Serial_rdn <= '1';
-                        Serial_wrn <= '1';
-                    -- RAM1
-                    elsif (MemAddr >= x"8000" and MemAddr <= x"FFFF") then
+                        Serial_wrn <= '0';
+                    when x"BF01" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                        SerialFinish <= '0'; Serial_wrn <= '1'; Serial_rdn <= '1';
+                    when others =>
                         RAM1EN <= '0';
                         RAM1OE <= '1';
                         RAM1RW <= '0';
-                        SerialFinish <= '1';
-                        Serial_rdn <= '1';
-                        Serial_wrn <= '1';
-                    else
-                        RAM1EN <= '1';
-                        RAM1OE <= '1';
-                        RAM1RW <= '1';
-                        SerialFinish <= '1';
-                        Serial_rdn <= '1';
-                        Serial_wrn <= '1';
-                    end if;
-                else
-                    RAM1EN <= '1';
-                    RAM1OE <= '1';
-                    RAM1RW <= '1';
-                    SerialFinish <= '1';
-                    Serial_rdn <= '1';
-                    Serial_wrn <= '1';
+                        SerialFinish <= '1'; Serial_rdn <= '1'; Serial_wrn <= '1';
+                    end case;
                 end if;
-            elsif (state = s2) then
-                state <= s3;
-                -- Read Memory (LW rx ry imm)
+            when s2 =>
                 if (MemRead = '1') then
-                    -- Serial Port
-                    if (MemAddr = x"BF00") then
-                        Serial_rdn <= '1';
-                        SerialFinish <= '1';
-                        MemOut <= RAM1Data;
-                    elsif (MemAddr = x"BF01") then
+                    case MemAddr is
+                    when x"BF00" =>
+                        RAM1EN <= '1';  RAM1OE <= '1'; RAM1RW <= '1';
+                        Serial_rdn <= '1'; Serial_wrn <= '1';
+                        if (Serial_tsre = '1' and Serial_tbre = '1') then
+                            SerialFinish <= '1';
+                        else
+                            SerialFinish <= '0';
+                        end if;
+                    when x"BF01" =>
+                        RAM1EN <= '1';  RAM1OE <= '1'; RAM1RW <= '1';
                         MemOut <= (1 => Serial_dataready, 0 => (Serial_tsre and Serial_tbre), others => '0');
                         SerialFinish <= '1';
-                    -- RAM1
-                    elsif (MemAddr >= x"8000" and MemAddr <= x"FFFF") then
+                    when others =>
                         RAM1EN <= '0';
                         RAM1OE <= '0';
 						RAM1RW <= '1';
                         SerialFinish <= '1';
                         MemOut <= RAM1Data;
-                    end if;
-                -- Write Memory (SW rx ry imm)
-                elsif (MemWrite = '1') then
-                    -- Serial Port
-                    if (MemAddr = x"BF00") then
-                        RAM1EN <= '1';
-                        Serial_wrn<= '1';
-                        SerialFinish <= '0';
-                    elsif (MemAddr = x"BF01") then
-                        SerialFinish <= '1';
-                    -- RAM1
-                    elsif (MemAddr >= x"8000" and MemAddr <= x"FFFF") then
-                        RAM1EN <= '0';
-						RAM1OE <= '1';
-                        RAM1RW <= '1';
-                        SerialFinish <= '1';
-                    end if;
+                    end case;
                 end if;
-            elsif (state = s3) then
-                state <= s0;
-                -- Read Memory (LW rx ry imm)
+                if (MemWrite = '1') then
+                    case MemAddr is
+                    when x"BF00" =>
+                        RAM1EN <= '1';  RAM1OE <= '1'; RAM1RW <= '1';
+                        SerialFinish <= '0'; Serial_rdn <= '1'; Serial_wrn <= '1';
+                    when x"BF01" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                        SerialFinish <= '1'; Serial_wrn <= '1'; Serial_rdn <= '1';
+                    when others =>
+                        RAM1EN <= '0'; RAM1OE <= '1'; RAM1RW <= '1';
+                        SerialFinish <= '1'; Serial_wrn <= '1'; Serial_rdn <= '1';
+                    end case;
+                end if;
+            when s3 =>
                 if (MemRead = '1') then
-                    -- Serial Port
-                    if (MemAddr = x"BF00") then
-                        RAM1EN <= '1';
-                        Serial_rdn <= '1';
-                        SerialFinish <= '1';
+                    case MemAddr is
+                    when x"BF00" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                        Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
                         MemOut <= RAM1Data;
-                    elsif (MemAddr = x"BF01") then
+                    when x"BF01" =>
+                        RAM1EN <= '1';  RAM1OE <= '1'; RAM1RW <= '1';
+                        SerialFinish <= '1';
                         MemOut <= (1 => Serial_dataready, 0 => (Serial_tsre and Serial_tbre), others => '0');
-                        SerialFinish <= '1';
-                    -- RAM1
-                    elsif (MemAddr >= x"8000" and MemAddr <= x"FFFF") then
-                        RAM1EN <= '0';
-                        RAM1OE <= '0';
-						RAM1RW <= '1';
+                    when others =>
+                        RAM1EN <= '0'; RAM1OE <= '0'; RAM1RW <= '1';
                         SerialFinish <= '1';
                         MemOut <= RAM1Data;
-                    end if;
-                -- Write Memory (SW rx ry imm)
-                elsif (MemWrite = '1') then
-                    -- Serial Port
-                    if (MemAddr = x"BF00") then
+                    end case;
+                end if;
+                if (MemWrite = '1') then
+                    case MemAddr is
+                    when x"BF00" =>
                         RAM1EN <= '1';
                         Serial_wrn<= '1';
                         if (Serial_tsre = '1' and Serial_tbre = '1') then
@@ -237,18 +209,45 @@ begin
                         else
                             SerialFinish <= '0';
                         end if;
-                    elsif (MemAddr = x"BF01") then
-                        SerialFinish <= '1';
-                    -- RAM1
-                    elsif (MemAddr >= x"8000" and MemAddr <= x"FFFF") then
-                        RAM1EN <= '0';
-						RAM1OE <= '1';
-                        RAM1RW <= '1';
-                        SerialFinish <= '1';
-                    end if;
+                    when x"BF01" =>
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                        Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
+                    when others =>
+                        RAM1EN <= '0'; RAM1OE <= '1'; RAM1RW <= '1';
+                        Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
+                    end case;
                 end if;
-            end if;
+            when sr0 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                Serial_rdn <= '1'; Serial_wrn <= '1'; 
+                if (Serial_tsre = '1' and Serial_tbre = '1') then
+                    SerialFinish <= '1';
+                else
+                    SerialFinish <= '0';
+                end if;
+            when sr1 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
+                Serial_rdn <= '1'; Serial_wrn <= '1'; 
+                if (Serial_tsre = '1' and Serial_tbre = '1') then
+                    SerialFinish <= '1';
+                else
+                    SerialFinish <= '0';
+                end if;
+            when others =>
+                null;
+            end case;
         end if;
     end process;
+    
+    DLED_Right <=
+        "1111110" when state = s0 else
+        "0110000" when state = s1 else
+        "1101101" when state = s2 else
+        "1111001" when state = s3 else
+        "0110011" when state = sr0 else
+        "1011011" when state = sr1 else
+        "0000000";
+        
+    
 
 end Behavioral;

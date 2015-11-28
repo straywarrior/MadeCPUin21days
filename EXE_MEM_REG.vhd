@@ -54,7 +54,7 @@ architecture Behavioral of EXE_MEM_REG is
 begin
 process (clear, clk)
     begin
-        if (reset = '0' or (clear = '1' and stall = '0')) then
+        if (reset = '0') then
             RegWE_out <= '0';
             RegDest_out <= (others => '1');
             MemRd_out <= '0';

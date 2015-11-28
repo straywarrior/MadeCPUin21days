@@ -65,7 +65,11 @@ entity BubbleUnit is
 end BubbleUnit;
 
 architecture Behavioral of BubbleUnit is
-    signal InstMem_Collision : STD_LOGIC := '0';
+    -- InstMem Collision, just like Data Memory Collision
+    signal InstMem_Collision_0 : STD_LOGIC := '0';
+    -- InstMem Collision control.
+    signal InstMem_Collision_1 : STD_LOGIC := '0';
+    
     -- Data Memory Collision: LW R0 R1, ADDU R1 R2 R3, R1 is in collision
     signal DataMem_Collision_0 : STD_LOGIC := '0';
     -- LW R0 R1, CMP R1 R2, R1 is in collision. Need 2 bubble
@@ -82,9 +86,13 @@ architecture Behavioral of BubbleUnit is
     
 
 begin
-    InstMem_Collision <=
+    InstMem_Collision_0 <=
         '1' when (MemAddr <= x"7FFF" and (MemRead_EXE = '1' or MemWrite_EXE = '1')) else
         '0';
+    InstMem_Collision_1 <=
+        '1' when (MemAddr <= x"7FFF" and (MemRead_MEM = '1' or MemWrite_MEM = '1')) else
+        '0';
+
     DataMem_Collision_0 <=
         '1' when (MemRead_EXE = '1' and RegWE_EXE = '1' and (RegDest_EXE = RegOpA or RegDest_EXE = RegOpB) and RegDest_EXE /= "1111") else
         '0';
@@ -102,8 +110,8 @@ begin
     --    '0';
 
     Mem_Result_Sel <=
-        '0' when (MemRead_MEM = '1' and MemAddr <= x"7FFF") else
-        '1' when (MemRead_MEM = '1' and MemAddr >= x"8000") else
+        '1' when (MemRead_MEM = '1' and MemAddr <= x"7FFF") else
+        '0' when (MemRead_MEM = '1' and MemAddr >= x"8000") else
         '0';
 
     IF_ID_clear <=
@@ -111,25 +119,25 @@ begin
         '0';
     
     IF_ID_stall <=
-        '1' when (InstMem_Collision = '1' or DataMem_Collision_0 = '1' 
+        '1' when (InstMem_Collision_1 = '1' or DataMem_Collision_0 = '1' 
                   or DataMem_Collision_1 = '1' or DataMem_Collision_2 = '1' or DataMem_Collision_3 = '1') else
         '0';
 
     pc_stall <=
-        '1' when (InstMem_Collision = '1' or DataMem_Collision_0 = '1' 
+        '1' when (InstMem_Collision_1 = '1' or DataMem_Collision_0 = '1' 
                   or DataMem_Collision_1 = '1' or DataMem_Collision_2 = '1' or DataMem_Collision_3 = '1') else
         '0';
     
     InstAddrSel <=
-        '1' when (InstMem_Collision = '1') else
+        '1' when (InstMem_Collision_1 = '1') else
         '0';
 
     InstMemRead <=
-        MemRead_EXE when (InstMem_Collision = '1') else
+        MemRead_MEM when (InstMem_Collision_1 = '1') else
         '1';
 
     InstMemWrite <=
-        MemWrite_EXE when (InstMem_Collision = '1') else
+        MemWrite_MEM when (InstMem_Collision_1 = '1') else
         '0';
 
     EXE_MEM_stall <=
@@ -137,7 +145,7 @@ begin
         '0';
 
     ID_EXE_stall <=
-        '1' when (DataMem_Collision_3 = '1') else
+        '1' when (InstMem_Collision_1 = '1' or DataMem_Collision_3 = '1') else
         '0';
 
     ID_EXE_clear <=
@@ -145,6 +153,7 @@ begin
         '0';
     
     EXE_MEM_clear <=
+        '1' when (InstMem_Collision_1 = '1') else
         '0';
 
 end Behavioral;
