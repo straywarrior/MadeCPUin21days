@@ -1,0 +1,2 @@
+vhdl work "ClockDiv.vhd"
+vhdl work "Clock_Test.vhd"

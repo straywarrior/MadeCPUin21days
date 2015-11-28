@@ -1,0 +1,3 @@
+vhdl isim_temp "T_REG.vhd"
+vhdl isim_temp "InstDecoder.vhd"
+vhdl isim_temp "InstDecoder_Test.vhd"

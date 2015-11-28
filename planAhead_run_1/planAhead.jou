@@ -1,0 +1,310 @@
+#-----------------------------------------------------------
+# PlanAhead v14.7 (64-bit)
+# Build 321239 by xbuild on Fri Sep 27 19:29:51 MDT 2013
+# Start of session at: Tue Nov 24 10:35:59 2015
+# Process ID: 3244
+# Log file: Z:/Project/MadeCPUin21days/planAhead_run_1/planAhead.log
+# Journal file: Z:/Project/MadeCPUin21days/planAhead_run_1/planAhead.jou
+#-----------------------------------------------------------
+start_gui
+source Z:/Project/MadeCPUin21days/pa.fromNetlist.tcl
+startgroup
+set_property package_pin U9 [get_ports clock]
+endgroup
+startgroup
+set_property package_pin M15 [get_ports RAM1EN]
+endgroup
+startgroup
+set_property package_pin M16 [get_ports RAM1OE]
+endgroup
+startgroup
+set_property package_pin M18 [get_ports RAM1RW]
+endgroup
+startgroup
+set_property package_pin N10 [get_ports RAM2EN]
+endgroup
+startgroup
+set_property package_pin R9 [get_ports RAM2OE]
+endgroup
+startgroup
+set_property package_pin M9 [get_ports RAM2RW]
+endgroup
+startgroup
+set_property package_pin U10 [get_ports reset]
+endgroup
+startgroup
+set_property package_pin A16 [get_ports SERIAL_DATA_READY]
+endgroup
+startgroup
+set_property package_pin C14 [get_ports SERIAL_RDN]
+endgroup
+startgroup
+set_property package_pin D14 [get_ports SERIAL_TBRE]
+endgroup
+startgroup
+set_property package_pin N9 [get_ports SERIAL_TSRE]
+endgroup
+startgroup
+set_property package_pin U5 [get_ports SERIAL_WRN]
+endgroup
+startgroup
+set_property package_pin D10 [get_ports {LED[15]}]
+endgroup
+startgroup
+set_property package_pin E10 [get_ports {LED[14]}]
+endgroup
+startgroup
+set_property package_pin A11 [get_ports {LED[13]}]
+endgroup
+startgroup
+set_property package_pin B11 [get_ports {LED[12]}]
+endgroup
+startgroup
+set_property package_pin C11 [get_ports {LED[11]}]
+endgroup
+startgroup
+set_property package_pin D11 [get_ports {LED[10]}]
+endgroup
+startgroup
+set_property package_pin E11 [get_ports {LED[9]}]
+endgroup
+startgroup
+set_property package_pin F11 [get_ports {LED[8]}]
+endgroup
+startgroup
+set_property package_pin A12 [get_ports {LED[7]}]
+endgroup
+startgroup
+set_property package_pin E12 [get_ports {LED[6]}]
+endgroup
+startgroup
+set_property package_pin F12 [get_ports {LED[5]}]
+endgroup
+startgroup
+set_property package_pin A13 [get_ports {LED[4]}]
+endgroup
+startgroup
+set_property package_pin B13 [get_ports {LED[3]}]
+endgroup
+startgroup
+set_property package_pin D13 [get_ports {LED[2]}]
+endgroup
+startgroup
+set_property package_pin E13 [get_ports {LED[1]}]
+endgroup
+startgroup
+set_property package_pin A14 [get_ports {LED[0]}]
+endgroup
+startgroup
+set_property package_pin C17 [get_ports {RAM1ADDR[17]}]
+endgroup
+startgroup
+set_property package_pin C18 [get_ports {RAM1ADDR[17]}]
+endgroup
+startgroup
+set_property package_pin C17 [get_ports {RAM1ADDR[17]}]
+endgroup
+startgroup
+set_property package_pin C18 [get_ports {RAM1ADDR[16]}]
+endgroup
+startgroup
+set_property package_pin D16 [get_ports {RAM1ADDR[15]}]
+endgroup
+startgroup
+set_property package_pin D17 [get_ports {RAM1ADDR[14]}]
+endgroup
+startgroup
+set_property package_pin E15 [get_ports {RAM1ADDR[13]}]
+endgroup
+startgroup
+set_property package_pin E16 [get_ports {RAM1ADDR[12]}]
+endgroup
+startgroup
+set_property package_pin F14 [get_ports {RAM1ADDR[11]}]
+endgroup
+startgroup
+set_property package_pin F15 [get_ports {RAM1ADDR[10]}]
+endgroup
+startgroup
+set_property package_pin F17 [get_ports {RAM1ADDR[9]}]
+endgroup
+startgroup
+set_property package_pin F18 [get_ports {RAM1ADDR[8]}]
+endgroup
+startgroup
+set_property package_pin G13 [get_ports {RAM1ADDR[7]}]
+endgroup
+startgroup
+set_property package_pin G14 [get_ports {RAM1ADDR[6]}]
+endgroup
+startgroup
+set_property package_pin G15 [get_ports {RAM1ADDR[5]}]
+endgroup
+startgroup
+set_property package_pin G16 [get_ports {RAM1ADDR[4]}]
+endgroup
+startgroup
+set_property package_pin H14 [get_ports {RAM1ADDR[3]}]
+endgroup
+startgroup
+set_property package_pin H15 [get_ports {RAM1ADDR[2]}]
+endgroup
+startgroup
+set_property package_pin H16 [get_ports {RAM1ADDR[1]}]
+endgroup
+startgroup
+set_property package_pin H17 [get_ports {RAM1ADDR[0]}]
+endgroup
+startgroup
+set_property package_pin J12 [get_ports {RAM1DATA[15]}]
+endgroup
+startgroup
+set_property package_pin J13 [get_ports {RAM1DATA[14]}]
+endgroup
+startgroup
+set_property package_pin J14 [get_ports {RAM1DATA[13]}]
+endgroup
+startgroup
+set_property package_pin J15 [get_ports {RAM1DATA[12]}]
+endgroup
+startgroup
+set_property package_pin J16 [get_ports {RAM1DATA[11]}]
+endgroup
+startgroup
+set_property package_pin J17 [get_ports {RAM1DATA[10]}]
+endgroup
+startgroup
+set_property package_pin K12 [get_ports {RAM1DATA[9]}]
+endgroup
+startgroup
+set_property package_pin K13 [get_ports {RAM1DATA[8]}]
+endgroup
+startgroup
+set_property package_pin K14 [get_ports {RAM1DATA[7]}]
+endgroup
+startgroup
+set_property package_pin K15 [get_ports {RAM1DATA[6]}]
+endgroup
+startgroup
+set_property package_pin L15 [get_ports {RAM1DATA[5]}]
+endgroup
+startgroup
+set_property package_pin L16 [get_ports {RAM1DATA[4]}]
+endgroup
+startgroup
+set_property package_pin L17 [get_ports {RAM1DATA[3]}]
+endgroup
+startgroup
+set_property package_pin L18 [get_ports {RAM1DATA[2]}]
+endgroup
+startgroup
+set_property package_pin M13 [get_ports {RAM1DATA[1]}]
+endgroup
+startgroup
+set_property package_pin M14 [get_ports {RAM1DATA[0]}]
+endgroup
+startgroup
+set_property package_pin N14 [get_ports {RAM2ADDR[17]}]
+endgroup
+startgroup
+set_property package_pin N15 [get_ports {RAM2ADDR[16]}]
+endgroup
+startgroup
+set_property package_pin N18 [get_ports {RAM2ADDR[15]}]
+endgroup
+startgroup
+set_property package_pin P16 [get_ports {RAM2ADDR[14]}]
+endgroup
+startgroup
+set_property package_pin P17 [get_ports {RAM2ADDR[13]}]
+endgroup
+startgroup
+set_property package_pin P18 [get_ports {RAM2ADDR[12]}]
+endgroup
+startgroup
+set_property package_pin R15 [get_ports {RAM2ADDR[11]}]
+endgroup
+startgroup
+set_property package_pin R16 [get_ports {RAM2ADDR[10]}]
+endgroup
+startgroup
+set_property package_pin R18 [get_ports {RAM2ADDR[9]}]
+endgroup
+startgroup
+set_property package_pin T17 [get_ports {RAM2ADDR[8]}]
+endgroup
+startgroup
+set_property package_pin T18 [get_ports {RAM2ADDR[7]}]
+endgroup
+startgroup
+set_property package_pin U18 [get_ports {RAM2ADDR[6]}]
+endgroup
+startgroup
+set_property package_pin V15 [get_ports {RAM2ADDR[5]}]
+endgroup
+startgroup
+set_property package_pin V13 [get_ports {RAM2ADDR[4]}]
+endgroup
+startgroup
+set_property package_pin V12 [get_ports {RAM2ADDR[3]}]
+endgroup
+startgroup
+set_property package_pin V9 [get_ports {RAM2ADDR[2]}]
+endgroup
+startgroup
+set_property package_pin U16 [get_ports {RAM2ADDR[1]}]
+endgroup
+startgroup
+set_property package_pin U15 [get_ports {RAM2ADDR[0]}]
+endgroup
+set_property package_pin "" [get_ports [list  {RAM2DATA[15]}]]
+set_property package_pin "" [get_ports [list  {RAM2DATA[14]}]]
+startgroup
+set_property package_pin U13 [get_ports {RAM2DATA[15]}]
+endgroup
+startgroup
+set_property package_pin T16 [get_ports {RAM2DATA[14]}]
+endgroup
+startgroup
+set_property package_pin T15 [get_ports {RAM2DATA[13]}]
+endgroup
+startgroup
+set_property package_pin T14 [get_ports {RAM2DATA[12]}]
+endgroup
+startgroup
+set_property package_pin T12 [get_ports {RAM2DATA[11]}]
+endgroup
+startgroup
+set_property package_pin R13 [get_ports {RAM2DATA[10]}]
+endgroup
+startgroup
+set_property package_pin R14 [get_ports {RAM2DATA[9]}]
+endgroup
+startgroup
+set_property package_pin R12 [get_ports {RAM2DATA[8]}]
+endgroup
+startgroup
+set_property package_pin R11 [get_ports {RAM2DATA[7]}]
+endgroup
+startgroup
+set_property package_pin R10 [get_ports {RAM2DATA[6]}]
+endgroup
+startgroup
+set_property package_pin P13 [get_ports {RAM2DATA[5]}]
+endgroup
+startgroup
+set_property package_pin P12 [get_ports {RAM2DATA[4]}]
+endgroup
+startgroup
+set_property package_pin P11 [get_ports {RAM2DATA[3]}]
+endgroup
+startgroup
+set_property package_pin P10 [get_ports {RAM2DATA[2]}]
+endgroup
+startgroup
+set_property package_pin N12 [get_ports {RAM2DATA[1]}]
+endgroup
+startgroup
+set_property package_pin N11 [get_ports {RAM2DATA[0]}]
+endgroup
+save_constraints
