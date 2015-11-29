@@ -7,6 +7,7 @@
 *.dat
 *.ffs_gui
 *.ffs_batch
+*.ffs_db
 *.wdb
 *.drc
 *.xmsgs

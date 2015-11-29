@@ -57,7 +57,7 @@ entity DataMemoryControl is
 end DataMemoryControl;
 
 architecture Behavioral of DataMemoryControl is
-    type state_type is (s0, s1, s2, s3, sr0, sr1); -- sr1 and sr2 is state for serial write
+    type state_type is (s0, s1, s2, s3, sr0, sr1, sr2, sr3, sr4, sr5, sr6, sr7, sr8, sr9, sr10, sr11); -- sr1 - sr11 is state for serial write. 50 MHz is too fast for serial port.
     signal state : state_type;
 
 begin
@@ -78,13 +78,28 @@ begin
             when s1 => state <= s2;
             when s2 => state <= s3;
             when s3 => 
-                if (Serial_tsre = '1' and Serial_tbre = '1') then
+                if (MemAddr = x"BF00" and MemWrite = '1') then
+                    state <= sr0;
+                else
+                    state <= s0;
+                end if;
+            when sr0 => state <= sr1;
+            when sr1 => state <= sr2;
+            when sr2 => state <= sr3;
+            when sr3 => state <= sr4;
+            when sr4 => state <= sr5;
+            when sr5 => state <= sr6;
+            when sr6 => state <= sr7;
+            when sr7 => state <= sr8;
+            when sr8 => state <= sr9;
+            when sr9 => state <= sr10;
+            when sr10 => state <= sr11;
+            when sr11 =>
+                if (Serial_tbre = '1' and Serial_tsre = '1') then
                     state <= s0;
                 else
                     state <= sr0;
                 end if;
-            when sr0 => state <= sr1;
-            when sr1 => state <= s2;
             when others => state <= s0;
             end case;
         end if;
@@ -151,12 +166,8 @@ begin
                     case MemAddr is
                     when x"BF00" =>
                         RAM1EN <= '1';  RAM1OE <= '1'; RAM1RW <= '1';
-                        Serial_rdn <= '1'; Serial_wrn <= '1';
-                        if (Serial_tsre = '1' and Serial_tbre = '1') then
-                            SerialFinish <= '1';
-                        else
-                            SerialFinish <= '0';
-                        end if;
+                        SerialFinish <= '0'; Serial_rdn <= '1'; Serial_wrn <= '1';
+
                     when x"BF01" =>
                         RAM1EN <= '1';  RAM1OE <= '1'; RAM1RW <= '1';
                         MemOut <= (1 => Serial_dataready, 0 => (Serial_tsre and Serial_tbre), others => '0');
@@ -202,30 +213,36 @@ begin
                 if (MemWrite = '1') then
                     case MemAddr is
                     when x"BF00" =>
-                        RAM1EN <= '1';
-                        Serial_wrn<= '1';
-                        if (Serial_tsre = '1' and Serial_tbre = '1') then
-                            SerialFinish <= '1';
-                        else
-                            SerialFinish <= '0';
-                        end if;
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
                     when x"BF01" =>
-                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
-                        Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
+                        RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1'; Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
                     when others =>
-                        RAM1EN <= '0'; RAM1OE <= '1'; RAM1RW <= '1';
-                        Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
+                        RAM1EN <= '0'; RAM1OE <= '1'; RAM1RW <= '1'; Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
                     end case;
                 end if;
             when sr0 =>
-                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
-                Serial_rdn <= '1'; Serial_wrn <= '1'; 
-                if (Serial_tsre = '1' and Serial_tbre = '1') then
-                    SerialFinish <= '1';
-                else
-                    SerialFinish <= '0';
-                end if;
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
             when sr1 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr2 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr3 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr4 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr5 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr6 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr7 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr8 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr9 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '0';
+            when sr10 =>
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
+            when sr11 =>
                 RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';
                 Serial_rdn <= '1'; Serial_wrn <= '1'; 
                 if (Serial_tsre = '1' and Serial_tbre = '1') then
@@ -234,7 +251,7 @@ begin
                     SerialFinish <= '0';
                 end if;
             when others =>
-                null;
+                RAM1EN <= '1'; RAM1OE <= '1'; RAM1RW <= '1';Serial_rdn <= '1'; Serial_wrn <= '1'; SerialFinish <= '1';
             end case;
         end if;
     end process;
