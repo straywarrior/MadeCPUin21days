@@ -36,12 +36,14 @@ entity EXE_MEM_REG is
            stall : in  STD_LOGIC;
            RegWE_in : in  STD_LOGIC;
            RegDest_in : in  STD_LOGIC_VECTOR (3 downto 0);
+           RegMemDIn_in : in  STD_LOGIC_VECTOR (3 downto 0);
            MemRd_in : in  STD_LOGIC;
            MemWE_in : in  STD_LOGIC;
            MemDIn_in : in  STD_LOGIC_VECTOR (15 downto 0);
            ALUout_in : in  STD_LOGIC_VECTOR (15 downto 0);
            RegWE_out : out  STD_LOGIC;
            RegDest_out : out  STD_LOGIC_VECTOR (3 downto 0);
+           RegMemDIn_out : out  STD_LOGIC_VECTOR (3 downto 0);
            MemRd_out : out  STD_LOGIC;
            MemWE_out : out  STD_LOGIC;
            MemDIn_out : out  STD_LOGIC_VECTOR (15 downto 0);
@@ -57,6 +59,7 @@ process (clear, clk)
         if (reset = '0') then
             RegWE_out <= '0';
             RegDest_out <= (others => '1');
+            RegMemDIn_out <= (others => '1');
             MemRd_out <= '0';
             MemWE_out <= '0';
             MemDIn_out <= (others => '0');
@@ -65,6 +68,7 @@ process (clear, clk)
             if (clear = '0' and stall = '0') then
                 RegWE_out <= RegWE_in;
                 RegDest_out <= RegDest_in;
+                RegMemDIn_out <= RegMemDIn_in;
                 MemRd_out <= MemRd_in;
                 MemWE_out <= MemWE_in;
                 MemDIn_out <= MemDIn_in;
@@ -72,6 +76,7 @@ process (clear, clk)
             elsif (clear = '1' and stall = '0') then
                 RegWE_out <= '0';
                 RegDest_out <= (others => '1');
+                RegMemDIn_out <= (others => '1');
                 MemRd_out <= '0';
                 MemWE_out <= '0';
                 MemDIn_out <= (others => '0');

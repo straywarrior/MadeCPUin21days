@@ -1,7 +1,7 @@
 
 # PlanAhead Generated physical constraints 
 
-NET "clock" LOC = B8;
+NET "clock" LOC = B9;
 NET "RAM1EN" LOC = M15;
 NET "RAM1OE" LOC = M16;
 NET "RAM1RW" LOC = M18;

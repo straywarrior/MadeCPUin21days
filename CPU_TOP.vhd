@@ -96,6 +96,7 @@ architecture Behavioral of CPU_TOP is
                RegDest_EXE : in  STD_LOGIC_VECTOR (3 downto 0);
                RegWE_MEM: in  STD_LOGIC;
                RegDest_MEM : in  STD_LOGIC_VECTOR (3 downto 0);
+               RegMemDIn_EXE : in STD_LOGIC_VECTOR (3 downto 0);
                MemRead_EXE : in  STD_LOGIC;
                MemWrite_EXE : in  STD_LOGIC;
                MemRead_MEM : in STD_LOGIC;
@@ -142,14 +143,16 @@ architecture Behavioral of CPU_TOP is
                CReg : in STD_LOGIC;
                CRegA : in STD_LOGIC_VECTOR (3 downto 0);
                CRegB : in STD_LOGIC_VECTOR (3 downto 0);
-               RegMemDIn : in STD_LOGIC_VECTOR (3 downto 0);
+               RegMemDIn_EXE : in STD_LOGIC_VECTOR (3 downto 0);
+               RegMemDIn_MEM : in STD_LOGIC_VECTOR (3 downto 0);
 
                RegAValSel : out STD_LOGIC;
                RegBValSel : out STD_LOGIC;
                RegRAValSel : out STD_LOGIC;
                OperandASel : out STD_LOGIC_VECTOR (1 downto 0);
                OperandBSel : out STD_LOGIC_VECTOR (1 downto 0);
-               MemDInSel : out STD_LOGIC_VECTOR (1 downto 0)
+               MemDInSel_EXE : out STD_LOGIC_VECTOR (1 downto 0);
+               MemDInSel_MEM : out STD_LOGIC
                );
     end component;
 
@@ -356,12 +359,14 @@ architecture Behavioral of CPU_TOP is
                stall : in  STD_LOGIC;
                RegWE_in : in  STD_LOGIC;
                RegDest_in : in  STD_LOGIC_VECTOR (3 downto 0);
+               RegMemDIn_in : in  STD_LOGIC_VECTOR (3 downto 0);
                MemRd_in : in  STD_LOGIC;
                MemWE_in : in  STD_LOGIC;
                MemDIn_in : in  STD_LOGIC_VECTOR (15 downto 0);
                ALUout_in : in  STD_LOGIC_VECTOR (15 downto 0);
                RegWE_out : out  STD_LOGIC;
                RegDest_out : out  STD_LOGIC_VECTOR (3 downto 0);
+               RegMemDIn_out : out  STD_LOGIC_VECTOR (3 downto 0);
                MemRd_out : out  STD_LOGIC;
                MemWE_out : out  STD_LOGIC;
                MemDIn_out : out  STD_LOGIC_VECTOR (15 downto 0);
@@ -396,7 +401,8 @@ architecture Behavioral of CPU_TOP is
     signal RegRA_MUX_SEL : STD_LOGIC;
     signal RegAVal_MUX_SEL : STD_LOGIC;
     signal RegBVal_MUX_SEL : STD_LOGIC;
-    signal MemDIn_MUX_SEL : STD_LOGIC_VECTOR (1 downto 0);
+    signal EXE_MemDIn_MUX_SEL : STD_LOGIC_VECTOR (1 downto 0);
+    signal MEM_MemDIn_MUX_SEL : STD_LOGIC;
     
     signal RegAVal_MUX_OUT : STD_LOGIC_VECTOR (15 downto 0);
     signal RegBVal_MUX_OUT : STD_LOGIC_VECTOR (15 downto 0);
@@ -446,11 +452,13 @@ architecture Behavioral of CPU_TOP is
     -- EXE/MEM Register
     signal EXE_MEM_RegWrite : STD_LOGIC;
     signal EXE_MEM_RegDest : STD_LOGIC_VECTOR (3 downto 0);
+    signal EXE_MEM_RegMemDIn : STD_LOGIC_VECTOR (3 downto 0);
     signal EXE_MEM_MemRead : STD_LOGIC;
     signal EXE_MEM_MemDIn : STD_LOGIC_VECTOR (15 downto 0);
     signal EXE_MEM_MemWrite : STD_LOGIC;
     signal EXE_MEM_ALUOUT : STD_LOGIC_VECTOR (15 downto 0);
     -- Data Memory & Serial Port
+    signal MEM_MemDIn_MUX_OUT : STD_LOGIC_VECTOR (15 downto 0);
     signal DATA_MEM_OUT : STD_LOGIC_VECTOR (15 downto 0);
     signal DATA_MEM_MUX_OUT : STD_LOGIC_VECTOR (15 downto 0);
     signal MEM_RESULT_MUX_OUT : STD_LOGIC_VECTOR (15 downto 0);
@@ -492,7 +500,7 @@ begin
         RegBVal_MUX_OUT when (SW = "0000000000011100") else
         
         ALU_RESULT when (SW = "0000000000100000") else
-        OpA_MUX_SEL & OpB_MUX_SEL & MemDIn_MUX_SEL & ID_EXE_RegOpA & ID_EXE_RegOpB & "00" when (SW = "0000000000100001") else
+        OpA_MUX_SEL & OpB_MUX_SEL & EXE_MemDIn_MUX_SEL & ID_EXE_RegOpA & ID_EXE_RegOpB & "00" when (SW = "0000000000100001") else
         ID_EXE_OpCode & ID_EXE_MemRead & ID_EXE_MemWrite & ID_EXE_RegWrite & ID_EXE_RegDest & "00000" when (SW = "0000000000100011") else
         ID_EXE_MemDIn when (SW = "0000000000100111") else
         ID_EXE_RegMemDIn & "000000000000" when (SW = "0000000000100110") else
@@ -501,7 +509,7 @@ begin
             & SERIAL_DATA_READY & SERIAL_TBRE & SERIAL_TSRE & DATA_MEM_SERIAL_FINISH & "00000" when (SW = "0000000001000001") else
         DATA_MEM_OUT when (SW = "0000000001000011") else
         DATA_MEM_MUX_OUT when (SW = "0000000001000010") else
-        EXE_MEM_MemDIn when (SW = "0000000001000111") else
+        MEM_MemDIn_MUX_OUT when (SW = "0000000001000111") else
         
         MEM_WB_RegWriteVal when (SW = "0000000010000000") else
         MEM_WB_RegDest & MEM_WB_RegWrite & "00000000000" when (SW = "0000000010000001") else
@@ -522,6 +530,7 @@ begin
         RegDest_EXE => ID_EXE_RegDest,
         RegWE_MEM=> EXE_MEM_RegWrite,
         RegDest_MEM => EXE_MEM_RegDest,
+        RegMemDIn_EXE => ID_EXE_RegMemDIn,
         MemRead_EXE => ID_EXE_MemRead,
         MemWrite_EXE => ID_EXE_MemWrite,
         MemRead_MEM => EXE_MEM_MemRead,
@@ -569,7 +578,7 @@ begin
         MemRead => INST_MEM_READ,
         MemWrite => INST_MEM_WRITE,
         MemAddr => INST_ADDR_OUT,
-        MemData => EXE_MEM_MemDIn,
+        MemData => MEM_MemDIn_MUX_OUT,
         MemOut => INST_MEM_OUT,
         
         RAM2Addr => RAM2ADDR,
@@ -745,7 +754,7 @@ begin
         input2 => EXE_MEM_ALUOUT,
         input3 => MEM_WB_RegWriteVal,
         input4 => "0000000000000000",
-        opcode => MemDIn_MUX_SEL,
+        opcode => EXE_MemDIn_MUX_SEL,
         output => MemDIn_MUX_OUT
         );
 
@@ -756,12 +765,14 @@ begin
         stall => EXE_MEM_REG_STALL,
         RegWE_in => ID_EXE_RegWrite,
         RegDest_in => ID_EXE_RegDest,
+        RegMemDIn_in => ID_EXE_RegMemDIn,
         MemRd_in => ID_EXE_MemRead,
         MemWE_in => ID_EXE_MemWrite,
         MemDIn_in => MemDIn_MUX_OUT,
         ALUout_in => ALU_RESULT,
         RegWE_out => EXE_MEM_RegWrite,
         RegDest_out => EXE_MEM_RegDest,
+        RegMemDIn_out => EXE_MEM_RegMemDIn,
         MemRd_out => EXE_MEM_MemRead,
         MemWE_out => EXE_MEM_MemWrite,
         MemDIn_out => EXE_MEM_MemDIn,
@@ -780,14 +791,16 @@ begin
         CReg => Decoder_CReg,
         CRegA => Decoder_CRegA,
         CRegB => Decoder_CRegB,
-        RegMemDIn => ID_EXE_RegMemDIn,
+        RegMemDIn_EXE => ID_EXE_RegMemDIn,
+        RegMemDIn_MEM => EXE_MEM_RegMemDIn,
 
         RegAValSel => RegAVal_MUX_SEL,
         RegBValSel => RegBVal_MUX_SEL,
         RegRAValSel => RegRA_MUX_SEL,
         OperandASel => OpA_MUX_SEL,
         OperandBSel => OpB_MUX_SEL,
-        MemDInSel => MemDIn_MUX_SEL
+        MemDInSel_EXE => EXE_MemDIn_MUX_SEL,
+        MemDInSel_MEM => MEM_MemDIn_MUX_SEL
         );
  
 -- MEM Section
@@ -798,7 +811,7 @@ begin
         MemRead => EXE_MEM_MemRead,
         MemWrite=> EXE_MEM_MemWrite,
         MemAddr => EXE_MEM_ALUOUT,
-        MemData => EXE_MEM_MemDIn,
+        MemData => MEM_MemDIn_MUX_OUT,
         MemOut => DATA_MEM_OUT,
         SerialFinish => DATA_MEM_SERIAL_FINISH,
 
@@ -815,6 +828,13 @@ begin
         Serial_wrn => SERIAL_WRN,
         
         DLED_Right => DLED_RIGHT
+        );
+    
+    MEM_MemDIn_MUX : TwoInMuxer_16bit PORT MAP (
+        input1 => EXE_MEM_MemDIn,
+        input2 => MEM_WB_RegWriteVal,
+        opcode => MEM_MemDIn_MUX_SEL,
+        output => MEM_MemDIn_MUX_OUT
         );
     
     MEM_MUX : TwoInMuxer_16bit PORT MAP (

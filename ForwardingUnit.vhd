@@ -41,14 +41,16 @@ entity ForwardingUnit is
            CReg : in STD_LOGIC;
            CRegA : in STD_LOGIC_VECTOR (3 downto 0);
            CRegB : in STD_LOGIC_VECTOR (3 downto 0);
-           RegMemDIn : in STD_LOGIC_VECTOR (3 downto 0);
+           RegMemDIn_EXE : in STD_LOGIC_VECTOR (3 downto 0);
+           RegMemDIn_MEM : in STD_LOGIC_VECTOR (3 downto 0);
 
            RegAValSel : out STD_LOGIC;
            RegBValSel : out STD_LOGIC;
            RegRAValSel : out STD_LOGIC;
            OperandASel : out STD_LOGIC_VECTOR (1 downto 0);
            OperandBSel : out STD_LOGIC_VECTOR (1 downto 0);
-           MemDInSel : out STD_LOGIC_VECTOR (1 downto 0)
+           MemDInSel_EXE : out STD_LOGIC_VECTOR (1 downto 0);
+           MemDInSel_MEM : out STD_LOGIC
            );
 end ForwardingUnit;
 
@@ -64,10 +66,14 @@ begin
         "10" when RegWE_WB = '1' and RegDest_WB /= "1111" and RegDest_WB = RegOpB and (RegDest_MEM /= RegOpB or MemRead_WB = '1') else
         "00";
     
-    MemDInSel <= 
-        "01" when RegWE_MEM = '1' and RegDest_MEM /= "1111" and RegDest_MEM = RegMemDIn else
-        "10" when RegWE_WB = '1' and RegDest_WB /= "1111" and RegDest_WB = RegMemDIn and (RegDest_MEM /= RegMemDIn or MemRead_WB = '1') else
+    MemDInSel_EXE <= 
+        "01" when RegWE_MEM = '1' and RegDest_MEM /= "1111" and RegDest_MEM = RegMemDIn_EXE else
+        "10" when RegWE_WB = '1' and RegDest_WB /= "1111" and RegDest_WB = RegMemDIn_EXE and (RegDest_MEM /= RegMemDIn_EXE or MemRead_WB = '1') else
         "00";
+        
+    MemDInSel_MEM <=
+        '1' when RegWE_MEM = '1' and RegDest_MEM /= "1111" and RegDest_MEM = RegMemDIn_MEM else
+        '0';
     
     RegAValSel <= 
         '1' when RegWE_MEM = '1' and RegDest_MEM /= "1111" and RegDest_MEM = CRegA else

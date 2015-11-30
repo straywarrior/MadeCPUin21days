@@ -36,6 +36,7 @@ entity BubbleUnit is
            RegDest_EXE : in  STD_LOGIC_VECTOR (3 downto 0);
            RegWE_MEM: in  STD_LOGIC;
            RegDest_MEM : in  STD_LOGIC_VECTOR (3 downto 0);
+           RegMemDIn_EXE : in STD_LOGIC_VECTOR (3 downto 0);
            MemRead_EXE : in  STD_LOGIC;
            MemWrite_EXE : in  STD_LOGIC;
            MemRead_MEM : in STD_LOGIC;
@@ -80,6 +81,11 @@ architecture Behavioral of BubbleUnit is
     signal DataMem_Collision_2 : STD_LOGIC := '0';
     -- SW BF00 or LW BF00
     signal DataMem_Collision_3 : STD_LOGIC := '0';
+    -- LW R3 R4 1
+    -- SW R3 R4 2
+    -- R4 is in collision
+    signal DataMem_Collision_4 : STD_LOGIC := '0';
+    
     
     
     
@@ -105,9 +111,9 @@ begin
     DataMem_Collision_3 <=
         '1' when ((MemRead_MEM = '1' or MemWrite_MEM = '1') and MemAddr = x"BF00" and SerialFinish = '0') else
         '0';
-    --DataMem_Collision_4 <=
-    --    '1' when (RegWE_EXE = '1' and (CReg = '1' and (RegDest_EXE = CRegA or RegDest_EXE = CRegB) and RegDest_EXE /= "1111") else
-    --    '0';
+    DataMem_Collision_4 <=
+        '1' when (MemRead_MEM = '1' and RegWE_MEM = '1' and MemWrite_EXE = '1' and RegMemDIn_EXE = RegDest_MEM) else
+        '0';
 
     Mem_Result_Sel <=
         '1' when (MemRead_MEM = '1' and MemAddr <= x"7FFF") else

@@ -9,7 +9,7 @@ Target Device  : xc3s1200e
 Target Package : fg320
 Target Speed   : -4
 Mapper Version : spartan3e -- $Revision: 1.55 $
-Mapped Date    : Sun Nov 29 13:21:53 2015
+Mapped Date    : Mon Nov 30 22:25:32 2015
 
 Mapping design into LUTs...
 Running directed packing...
@@ -54,17 +54,17 @@ Design Summary:
 Number of errors:      0
 Number of warnings:    8
 Logic Utilization:
-  Total Number Slice Registers:         542 out of  17,344    3%
-    Number used as Flip Flops:          484
+  Total Number Slice Registers:         547 out of  17,344    3%
+    Number used as Flip Flops:          489
     Number used as Latches:              58
-  Number of 4 input LUTs:             1,984 out of  17,344   11%
+  Number of 4 input LUTs:             1,996 out of  17,344   11%
 Logic Distribution:
-  Number of occupied Slices:          1,118 out of   8,672   12%
-    Number of Slices containing only related logic:   1,118 out of   1,118 100%
-    Number of Slices containing unrelated logic:          0 out of   1,118   0%
+  Number of occupied Slices:          1,123 out of   8,672   12%
+    Number of Slices containing only related logic:   1,123 out of   1,123 100%
+    Number of Slices containing unrelated logic:          0 out of   1,123   0%
       *See NOTES below for an explanation of the effects of unrelated logic.
-  Total Number of 4 input LUTs:       2,000 out of  17,344   11%
-    Number used as logic:             1,984
+  Total Number of 4 input LUTs:       2,012 out of  17,344   11%
+    Number used as logic:             1,996
     Number used as a route-thru:         16
 
   The Slice Logic Distribution report is not meaningful if the design is
@@ -73,11 +73,11 @@ Logic Distribution:
   Number of bonded IOBs:                120 out of     250   48%
   Number of BUFGMUXs:                     3 out of      24   12%
 
-Average Fanout of Non-Clock Nets:                4.14
+Average Fanout of Non-Clock Nets:                4.13
 
 Peak Memory Usage:  286 MB
 Total REAL time to MAP completion:  4 secs 
-Total CPU time to MAP completion:   4 secs 
+Total CPU time to MAP completion:   3 secs 
 
 NOTES:
 
