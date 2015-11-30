@@ -72,7 +72,7 @@ begin
         "00";
         
     MemDInSel_MEM <=
-        '1' when RegWE_MEM = '1' and RegDest_MEM /= "1111" and RegDest_MEM = RegMemDIn_MEM else
+        '1' when RegWE_WB = '1' and RegDest_WB /= "1111" and RegDest_WB = RegMemDIn_MEM else
         '0';
     
     RegAValSel <= 
